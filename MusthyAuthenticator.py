@@ -45,6 +45,29 @@ class MusthyAuthenticator(ctk.CTk):
         with open(self.accounts_file, 'w') as f:
             json.dump(self.accounts, f, indent=4)
 
+    def show_error(self, title, message):
+        error_window = ctk.CTkToplevel(self)
+        error_window.title(title)
+        error_window.geometry("300x150")
+        error_window.resizable(False, False)
+        
+        # Center the dialog on the parent window
+        error_window.update_idletasks()
+        x = self.winfo_x() + (self.winfo_width() // 2) - (300 // 2)
+        y = self.winfo_y() + (self.winfo_height() // 2) - (150 // 2)
+        error_window.geometry(f"+{x}+{y}")
+        
+        label = ctk.CTkLabel(error_window, text=message, wraplength=250)
+        label.pack(pady=20, padx=20)
+        
+        ok_button = ctk.CTkButton(error_window, text="OK", command=error_window.destroy)
+        ok_button.pack(pady=10)
+        
+        error_window.transient(self)
+        error_window.grab_set()
+        error_window.focus()
+        self.wait_window(error_window)
+
     def add_account(self):
         dialog = ctk.CTkInputDialog(text="Enter Account Name:", title="Add Account")
         name = dialog.get_input()
@@ -59,9 +82,7 @@ class MusthyAuthenticator(ctk.CTk):
                     self.save_accounts()
                     self.update_codes()
                 except Exception as e:
-                    # CustomTkinter'de messagebox
-                    error_dialog = ctk.CTkMessagebox(title="Error", message=f"Invalid secret key: {str(e)}")
-                    error_dialog.get()
+                    self.show_error("Error", f"Invalid secret key: {str(e)}")
 
     def remove_account(self):
         # For simplicity, use input for index
@@ -75,11 +96,9 @@ class MusthyAuthenticator(ctk.CTk):
                     self.save_accounts()
                     self.update_codes()
                 else:
-                    error_dialog = ctk.CTkMessagebox(title="Error", message="Invalid index")
-                    error_dialog.get()
+                    self.show_error("Error", "Invalid index")
             except ValueError:
-                error_dialog = ctk.CTkMessagebox(title="Error", message="Invalid number")
-                error_dialog.get()
+                self.show_error("Error", "Invalid number")
 
     def delete_account(self, index):
         del self.accounts[index]
