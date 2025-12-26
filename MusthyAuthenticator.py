@@ -51,6 +51,12 @@ class MusthyAuthenticator(ctk.CTk):
         error_window.geometry("300x150")
         error_window.resizable(False, False)
         
+        # Center the dialog on the parent window
+        error_window.update_idletasks()
+        x = self.winfo_x() + (self.winfo_width() // 2) - (300 // 2)
+        y = self.winfo_y() + (self.winfo_height() // 2) - (150 // 2)
+        error_window.geometry(f"+{x}+{y}")
+        
         label = ctk.CTkLabel(error_window, text=message, wraplength=250)
         label.pack(pady=20, padx=20)
         
@@ -59,6 +65,7 @@ class MusthyAuthenticator(ctk.CTk):
         
         error_window.transient(self)
         error_window.grab_set()
+        error_window.focus()
         self.wait_window(error_window)
 
     def add_account(self):
